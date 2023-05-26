@@ -87,7 +87,45 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Center(child: Text('Home Page')),
+      ),
+      /// MultiProvider is used with 2 StreamProviders
+      ///
+      /// First one is emitting a stream of [Seconds] periodically
+      /// after each second
+      ///
+      /// Seconds one is emitting a stream of [Minutes] periodically
+      /// after each 60 seconds, or one minute.
+      body: MultiProvider(
+        providers: [
+          StreamProvider.value(
+            value: Stream<Seconds>.periodic(
+              const Duration(seconds: 1),
+              (_) => Seconds(),
+            ),
+            initialData: Seconds(),
+          ),
+          StreamProvider.value(
+            value: Stream<Minutes>.periodic(
+              const Duration(minutes: 1),
+              (_) => Minutes(),
+            ),
+            initialData: Minutes(),
+          ),
+        ],
+
+        /// The [MultiProvider] is being consumed by a [Column]
+        /// which contains [SecondsWidget] and [MinutesWidget]
+        child: const Column(
+          children: [
+            Row(
+              children: [
+                SecondsWidget(),
+                MinutesWidget(),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
